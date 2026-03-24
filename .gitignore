@@ -1,0 +1,5 @@
+# This is a comment
+node_modules/    <-- Ignores the entire folder
+.env             <-- Ignores your secret passwords
+*.log            <-- Ignores any file ending in .log
+build/           <-- Ignores your finished website build
