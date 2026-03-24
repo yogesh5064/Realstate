@@ -8,7 +8,7 @@ const Home = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/properties')
+    axios.get('https://realstate-gsrm.onrender.com/api/properties')
       .then(res => setProperties(res.data))
       .catch(err => console.log(err));
   }, []);

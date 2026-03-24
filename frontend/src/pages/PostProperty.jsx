@@ -53,7 +53,7 @@ const PostProperty = () => {
       };
 
       // 3. Backend Database mein save karein
-      const response = await axios.post('http://localhost:5000/api/properties', finalData);
+      const response = await axios.post('https://realstate-gsrm.onrender.com/api/properties', finalData);
       
       if (response.status === 201 || response.status === 200) {
         setStep(3);
