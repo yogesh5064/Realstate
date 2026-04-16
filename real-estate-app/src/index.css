@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+:root {
+  /* Colors & Variables */
+  --text: #64748b;
+  --text-h: #0f172a;
+  --bg: #ffffff;
+  --border: #e2e8f0;
+  --code-bg: #f1f5f9;
+  --accent: #3b82f6; /* Professional Blue */
+  --accent-bg: rgba(59, 130, 246, 0.1);
+  --accent-border: rgba(59, 130, 246, 0.5);
+  --social-bg: rgba(241, 245, 249, 0.5);
+  --shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text);
+  background-color: var(--bg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Dark Mode Logic */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #94a3b8;
+    --text-h: #f8fafc;
+    --bg: #0f172a;
+    --border: #1e293b;
+    --code-bg: #1e293b;
+    --accent: #60a5fa;
+    --accent-bg: rgba(96, 165, 250, 0.15);
+    --accent-border: rgba(96, 165, 250, 0.5);
+    --shadow: rgba(0, 0, 0, 0.4) 0 10px 15px -3px;
+  }
+}
+
+/* --- 🔥 THE FIX: EDGE TO EDGE LAYOUT --- */
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden; /* Side scroll khatam */
+  background-color: var(--bg);
+}
+
+#root {
+  width: 100%;         /* 1126px hata kar 100% kiya */
+  max-width: 100vw;    /* Full screen width */
+  margin: 0;           /* Auto margin hatayi */
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+  border: none;        /* Side wali lines/borders hatayi */
+}
+
+/* --- TYPOGRAPHY --- */
+h1, h2, h3 {
+  color: var(--text-h);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 4rem); /* Responsive font size */
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+/* Utility for Centering Content inside Full-Width Sections */
+.container-custom {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* --- SMOOTH TRANSITIONS --- */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Custom Scrollbar for Premium Feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text);
+}
