@@ -27,7 +27,7 @@ if (!fs.existsSync(uploadsPath)) {
     fs.mkdirSync(uploadsPath, { recursive: true });
 }
 
-// Images access karne ke liye: http://localhost:5000/uploads/filename.jpg
+// Images access karne ke liye: https://realstate-41cq.onrender.com/uploads/filename.jpg
 app.use('/uploads', express.static(uploadsPath));
 
 // 3. Routes Mounting

@@ -26,7 +26,7 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
     if (!property.images || property.images.length === 0) {
       return "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800";
     }
-    const baseURL = "http://localhost:5000";
+    const baseURL = "https://realstate-41cq.onrender.com";
     const fileName = property.images[index].replace(/\\/g, '/').split('/').pop();
     return `${baseURL}/uploads/${fileName}`;
   };

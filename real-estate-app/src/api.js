@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: 'http://localhost:5000/api' });
+const API = axios.create({ baseURL: 'https://realstate-41cq.onrender.com/api' });
 
 // Request bhejne se pehle token check karega
 API.interceptors.request.use((req) => {

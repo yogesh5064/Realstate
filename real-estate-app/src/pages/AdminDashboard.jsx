@@ -23,7 +23,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/users', {
+      const res = await axios.get('https://realstate-41cq.onrender.com/api/admin/users', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(res.data);
@@ -54,7 +54,7 @@ const AdminDashboard = () => {
     const action = currentStatus ? "Unblock" : "Block";
     if (window.confirm(`Are you sure you want to ${action} this user?`)) {
       try {
-        await axios.patch(`http://localhost:5000/api/admin/users/${userId}/block`, {}, {
+        await axios.patch(`https://realstate-41cq.onrender.com/api/admin/users/${userId}/block`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
         fetchUsers(); 
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
     const action = currentApproval ? "Unapprove" : "Approve";
     if (window.confirm(`Do you want to ${action} this dealer to list properties?`)) {
       try {
-        await axios.patch(`http://localhost:5000/api/admin/users/${userId}/approve`, {}, {
+        await axios.patch(`https://realstate-41cq.onrender.com/api/admin/users/${userId}/approve`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
         fetchUsers();
