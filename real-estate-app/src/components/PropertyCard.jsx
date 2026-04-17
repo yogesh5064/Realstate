@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, MessageCircle, X, Eye } from 'lucide-react';
+import { 
+  MapPin, MessageCircle, X, Eye, Home, Trees, ShieldCheck 
+} from 'lucide-react';
 
 const PropertyCard = ({ property, isAdmin }) => {
   const [showMore, setShowMore] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
-  // 1. Forcefully screen size detect karna
+  // 1. Scroll Lock Logic: Jab popup khulega toh piche ka page freeze ho jayega
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    if (showMore) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'unset';
-    return () => {
-      window.removeEventListener('resize', handleResize);
+    if (showMore) {
+      document.body.style.overflow = 'hidden';
+    } else {
       document.body.style.overflow = 'unset';
-    };
+    }
+    return () => { document.body.style.overflow = 'unset'; };
   }, [showMore]);
 
+  // 2. Image URL Logic (Aapka original logic)
   const getFullImageUrl = () => {
-    if (!property.images || property.images.length === 0) return "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800";
+    if (!property.images || property.images.length === 0) {
+      return "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800";
+    }
     const baseURL = "https://realstate-41cq.onrender.com";
     const fileName = property.images[0].replace(/\\/g, '/').split('/').pop();
     return `${baseURL}/uploads/${fileName}`;
@@ -26,119 +29,118 @@ const PropertyCard = ({ property, isAdmin }) => {
 
   const handleWhatsApp = (e) => {
     e.stopPropagation();
-    window.open(`https://wa.me/91${property.phone || "8690385064"}`, '_blank');
-  };
-
-  // --- Inline Styles for Laptop (PC) ---
-  const pcStyle = {
-    width: '450px',
-    height: 'auto',
-    maxHeight: '85vh',
-    borderRadius: '32px',
-    position: 'relative',
-    backgroundColor: 'white',
-    display: 'flex',
-    flexDirection: 'column'
-  };
-
-  // --- Inline Styles for Mobile ---
-  const mobileStyle = {
-    width: '100vw',
-    height: '100vh',
-    borderRadius: '0px',
-    position: 'relative',
-    backgroundColor: 'white',
-    display: 'flex',
-    flexDirection: 'column'
+    const contact = property.phone || "8690385064";
+    window.open(`https://wa.me/91${contact}`, '_blank');
   };
 
   return (
     <>
-      {/* Card UI (As it is) */}
-      <div className="bg-white rounded-[24px] shadow-md border border-gray-100 overflow-hidden mb-4">
-        <div className="relative aspect-[4/3] bg-gray-100">
-          <img src={getFullImageUrl()} className="w-full h-full object-cover" alt="img" />
+      {/* --- MAIN PROPERTY CARD (Grid View) --- */}
+      <div className="bg-white rounded-[24px] shadow-md border border-gray-100 overflow-hidden relative mb-4 transition-all hover:shadow-xl active:scale-95">
+        <div className="relative aspect-[4/3] bg-gray-200">
+          <img 
+            src={getFullImageUrl()} 
+            alt={property.title} 
+            onLoad={() => setImgLoaded(true)}
+            className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+          />
+          <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-lg uppercase font-bold">
+            {property.category}
+          </div>
         </div>
-        <div className="p-4 text-center">
-          <h3 className="text-lg font-black italic">₹{Number(property.price).toLocaleString('en-IN')}</h3>
-          <button onClick={() => setShowMore(true)} className="mt-2 w-full bg-black text-white py-2 rounded-xl text-xs font-bold">
-            DETAILS
-          </button>
+
+        <div className="p-4">
+          <h3 className="text-xl font-black text-gray-900 leading-none mb-1 italic">₹{Number(property.price).toLocaleString('en-IN')}</h3>
+          <p className="text-gray-600 font-bold truncate text-xs lowercase first-letter:uppercase">{property.title}</p>
+          <div className="flex items-center text-gray-400 text-[10px] mt-2 mb-4 font-bold uppercase tracking-tight">
+            <MapPin size={12} className="mr-1 text-red-500 shrink-0" /> 
+            <span className="truncate">{property.location}</span>
+          </div>
+
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setShowMore(true)} 
+              className="flex-1 bg-black text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors"
+            >
+              <Eye size={16} /> DETAILS
+            </button>
+            <button onClick={handleWhatsApp} className="bg-[#25D366] text-white px-5 py-3 rounded-xl hover:bg-[#1fb355] transition-colors">
+              <MessageCircle size={20} />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* --- FINAL FIXED POPUP --- */}
+      {/* --- 🔥 FINAL FIXED POPUP MODAL 🔥 --- */}
       {showMore && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          zIndex: 999999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'rgba(0,0,0,0.95)', // Piche ka parda ekdum solid
-          backdropFilter: 'blur(10px)'
-        }}>
-          {/* Backdrop Click */}
-          <div style={{ position: 'absolute', inset: 0 }} onClick={() => setShowMore(false)} />
-
-          {/* Modal Container with Dynamic Style */}
-          <div style={isMobile ? mobileStyle : pcStyle}>
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center transition-all duration-300">
+          
+          {/* 1. SOLID BACKDROP: Piche ka sab kuch block karne ke liye */}
+          <div 
+            className="fixed inset-0 bg-black/95 backdrop-blur-md transition-opacity" 
+            onClick={() => setShowMore(false)} 
+          />
+          
+          {/* 2. MODAL CONTAINER: PC par center box, Mobile par responsive */}
+          <div className="relative bg-white w-full h-full sm:h-auto sm:max-w-[450px] sm:max-h-[85vh] sm:rounded-[40px] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300 border border-white/10">
             
-            {/* Close Button */}
+            {/* Close Button: Fixed position inside modal */}
             <button 
               onClick={() => setShowMore(false)} 
-              style={{
-                position: 'absolute', top: '20px', right: '20px',
-                zIndex: 10, padding: '8px', backgroundColor: 'rgba(0,0,0,0.3)',
-                color: 'white', borderRadius: '50%', border: 'none', cursor: 'pointer'
-              }}
+              className="absolute top-5 right-5 z-[100] p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all"
             >
               <X size={24} />
             </button>
 
-            {/* Scrollable Content */}
-            <div style={{ overflowY: 'auto', flex: 1 }}>
-              <img src={getFullImageUrl()} style={{ width: '100%', height: '250px', objectCover: 'cover' }} alt="detail" />
-              <div style={{ padding: '24px' }}>
-                <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#111' }}>{property.title}</h2>
-                <p style={{ fontSize: '22px', fontWeight: 900, color: '#2563eb', margin: '8px 0' }}>₹{Number(property.price).toLocaleString('en-IN')}</p>
+            {/* Scrollable Area */}
+            <div className="overflow-y-auto flex-1 scrollbar-hide">
+              <img src={getFullImageUrl()} className="w-full aspect-video object-cover" alt="Detail View" />
+              
+              <div className="p-6 sm:p-8">
+                <span className="bg-blue-100 text-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase mb-2 inline-block tracking-widest italic">
+                  {property.category}
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-black text-gray-900 leading-tight mb-2 capitalize italic">{property.title}</h2>
+                <p className="text-3xl font-black text-blue-600 mb-6 italic tracking-tight">₹{Number(property.price).toLocaleString('en-IN')}</p>
                 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', margin: '20px 0' }}>
-                  <div style={{ backgroundColor: '#f9fafb', padding: '12px', borderRadius: '16px' }}>
-                    <p style={{ fontSize: '10px', color: '#9ca3af', fontWeight: 'bold' }}>AREA</p>
-                    <p style={{ fontWeight: 'bold' }}>{property.area} sqft</p>
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-3 mb-8">
+                  <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Total Area</p>
+                    <p className="font-extrabold text-gray-800 text-sm">{property.area} sqft</p>
                   </div>
-                  <div style={{ backgroundColor: '#f9fafb', padding: '12px', borderRadius: '16px' }}>
-                    <p style={{ fontSize: '10px', color: '#9ca3af', fontWeight: 'bold' }}>LOCATION</p>
-                    <p style={{ fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis' }}>{property.location}</p>
+                  <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Property Location</p>
+                    <p className="font-extrabold text-gray-800 text-sm truncate">{property.location}</p>
                   </div>
                 </div>
 
-                <p style={{ color: '#4b5563', lineHeight: 1.6, marginBottom: '80px' }}>
-                  {property.description || "Premium property listing details."}
-                </p>
-              </div>
-            </div>
-
-            {/* Fixed Contact Bar inside Modal */}
-            <div style={{
-              padding: '16px', borderTop: '1px solid #eee', backgroundColor: 'white'
-            }}>
-              <div style={{
-                backgroundColor: '#111', padding: '16px', borderRadius: '20px',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'white'
-              }}>
-                <div>
-                  <p style={{ fontSize: '10px', color: '#60a5fa', fontWeight: 'bold' }}>CONTACT OWNER</p>
-                  <p style={{ fontWeight: 'bold' }}>{property.seller?.name || "Admin"}</p>
+                {/* Description Area */}
+                <div className="mb-10">
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2 italic">About this property</p>
+                  <p className="text-gray-600 leading-relaxed font-semibold italic text-base">
+                    "{property.description || "Premium property listing with modern infrastructure and prime location accessibility."}"
+                  </p>
                 </div>
-                <button 
-                  onClick={handleWhatsApp} 
-                  style={{ backgroundColor: '#25D366', border: 'none', padding: '12px', borderRadius: '12px', cursor: 'pointer' }}
-                >
-                  <MessageCircle size={24} color="white" />
-                </button>
+
+                {/* Sticky Contact Bar inside Modal */}
+                <div className="bg-gray-900 p-5 rounded-[28px] text-white flex justify-between items-center shadow-2xl border border-white/5 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-black italic shadow-inner">
+                      A
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-0.5">Contact Seller</p>
+                      <p className="font-bold text-sm tracking-tight italic">Real Estate Admin</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={handleWhatsApp} 
+                    className="bg-[#25D366] p-3.5 rounded-2xl hover:scale-110 active:scale-95 transition-all shadow-md shadow-green-500/20"
+                  >
+                    <MessageCircle size={24} fill="white" strokeWidth={0}/>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
