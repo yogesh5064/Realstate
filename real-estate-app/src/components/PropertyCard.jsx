@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   MapPin, Home, Trees, MessageCircle, X, Heart, ChevronRight, 
-  CheckCircle, Trash2, Eye, Edit, Phone, ShieldCheck, UserCheck, ImageIcon,
-  Maximize2, Ruler, Calendar, Tag
+  CheckCircle, Trash2, Eye, Edit, Phone, ShieldCheck, UserCheck, ImageIcon 
 } from 'lucide-react';
 
 const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, isAdmin }) => {
@@ -32,6 +31,7 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
     return `${baseURL}/uploads/${fileName}`;
   };
 
+  // 🔥 LOGIC: Buyer vs Seller Contact Info
   const isOwnerOrAdmin = isAdmin || (property.seller?._id === currentUserId || property.seller === currentUserId);
   const displayContact = isOwnerOrAdmin ? (property.phone || property.seller?.phone || ADMIN_CONTACT) : ADMIN_CONTACT;
   const displayName = isOwnerOrAdmin ? (property.seller?.name || "Original Seller") : "Real Estate Admin";
@@ -45,7 +45,7 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
   return (
     <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-500 relative font-sans">
       
-      {/* --- 🖼️ IMAGE SECTION --- */}
+      {/* --- 🖼️ IMAGE SECTION (PROFESSIONAL ASPECT RATIO) --- */}
       <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
         {!imgLoaded && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-200 animate-pulse">
@@ -59,6 +59,7 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
           className={`w-full h-full object-cover object-center transition-all duration-1000 group-hover:scale-110 ${imgLoaded ? 'opacity-100' : 'opacity-0'} ${property.status === 'sold' ? 'grayscale-[0.4]' : ''}`}
         />
 
+        {/* Labels Overlay */}
         <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
           <span className="px-4 py-1.5 bg-black/60 backdrop-blur-md text-white text-[10px] font-black rounded-xl shadow-lg uppercase tracking-wider flex items-center gap-1.5 border border-white/20">
             {property.category === 'house' ? <Home size={12}/> : <Trees size={12}/>}
@@ -71,6 +72,7 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
           )}
         </div>
 
+        {/* Admin/Seller Quick Actions */}
         <div className="absolute top-4 right-4 z-30 flex flex-col gap-2">
           {isProfileView && (
             <>
@@ -119,99 +121,70 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
         </div>
       </div>
 
-      {/* --- RE-DESIGNED PREMIUM DETAILS MODAL --- */}
+      {/* --- PREMIUM DETAILS MODAL --- */}
       {showMore && (
-        <div className="fixed inset-0 bg-gray-950/40 backdrop-blur-md z-[500] flex items-center justify-center p-4 md:p-8">
-          <div className="bg-white rounded-[48px] w-full max-w-5xl h-fit max-h-[90vh] relative animate-in slide-in-from-bottom-8 duration-500 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col md:flex-row border border-white">
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[500] flex items-center justify-center p-2 md:p-6">
+          <div className="bg-white rounded-[40px] w-full max-w-4xl p-0 relative animate-in zoom-in duration-300 shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[95vh]">
             
-            {/* Left: Interactive Media Gallery */}
-            <div className="w-full md:w-[55%] h-80 md:h-auto relative group">
-              <img src={getFullImageUrl(currentImgIndex)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Detail View" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              
-              <button onClick={() => setShowMore(false)} className="absolute top-6 left-6 p-3 bg-white/20 backdrop-blur-xl text-white rounded-2xl hover:bg-red-500 transition-all border border-white/30 md:hidden">
+            {/* Modal Image Slider */}
+            <div className="w-full md:w-1/2 h-72 md:h-auto bg-gray-200 relative">
+              <img src={getFullImageUrl(currentImgIndex)} className="w-full h-full object-cover" alt="Detail View" />
+              <button onClick={() => setShowMore(false)} className="absolute top-6 left-6 p-3 bg-black/50 text-white rounded-full hover:bg-red-500 transition-all md:hidden">
                 <X size={24} />
               </button>
-
-              <div className="absolute bottom-8 left-8 flex items-center gap-3">
-                <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl text-white text-[10px] font-black uppercase tracking-[0.2em] border border-white/20">
-                  {currentImgIndex + 1} / {property.images?.length || 1} Images
-                </div>
+              <div className="absolute bottom-6 left-6 bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl text-white text-[10px] font-black uppercase tracking-widest border border-white/20">
+                Property Image {currentImgIndex + 1}/{property.images?.length || 1}
               </div>
             </div>
 
-            {/* Right: Refined Content Section */}
-            <div className="w-full md:w-[45%] p-8 md:p-12 overflow-y-auto bg-white flex flex-col">
-              <button onClick={() => setShowMore(false)} className="hidden md:flex absolute top-8 right-8 p-3 text-gray-400 hover:text-gray-900 hover:rotate-90 transition-all duration-300 bg-gray-50 rounded-2xl"><X size={24} /></button>
+            {/* Modal Content */}
+            <div className="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto bg-white flex flex-col">
+              <button onClick={() => setShowMore(false)} className="hidden md:flex absolute top-8 right-8 p-3 text-gray-400 hover:text-red-500 transition-all bg-gray-50 rounded-full"><X size={24} /></button>
               
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-blue-100">Exclusive Listing</span>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter italic">UID: {property._id}</span>
-                </div>
-                <h2 className="text-3xl md:text-5xl font-black text-gray-900 capitalize leading-[1.1] mb-4 tracking-tighter">{property.title}</h2>
-                <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-black text-blue-600 tracking-tighter">₹{Number(property.price).toLocaleString('en-IN')}</span>
-                    <span className="text-xs font-bold text-gray-400 uppercase">Total Investment</span>
-                </div>
+              <div className="mb-6">
+                <p className="text-blue-600 font-black text-sm uppercase tracking-widest mb-2 italic">Official Listing</p>
+                <h2 className="text-3xl md:text-4xl font-black text-gray-900 capitalize leading-tight mb-2">{property.title}</h2>
+                <p className="text-2xl font-black text-blue-600 italic tracking-tighter">₹{Number(property.price).toLocaleString('en-IN')}</p>
               </div>
 
-              {/* Specification Grid */}
-              <div className="grid grid-cols-2 gap-3 mb-8">
-                  <div className="p-5 bg-gray-50/50 rounded-3xl border border-gray-100 flex items-center gap-4">
-                     <div className="p-2.5 bg-white rounded-xl shadow-sm text-blue-500"><Ruler size={20}/></div>
-                     <div>
-                        <p className="text-[9px] font-black text-gray-400 uppercase mb-0.5">Area</p>
-                        <p className="text-sm font-bold text-gray-900">{property.area} Sq.ft</p>
-                     </div>
-                  </div>
-                  <div className="p-5 bg-gray-50/50 rounded-3xl border border-gray-100 flex items-center gap-4">
-                     <div className="p-2.5 bg-white rounded-xl shadow-sm text-green-500"><Tag size={20}/></div>
-                     <div>
-                        <p className="text-[9px] font-black text-gray-400 uppercase mb-0.5">Type</p>
-                        <p className="text-sm font-bold text-gray-900 capitalize">{property.category}</p>
-                     </div>
-                  </div>
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex flex-col">
+                    <span className="text-[9px] font-black text-gray-400 uppercase mb-1">Total Area</span>
+                    <span className="text-sm font-bold text-gray-800">{property.area} Sq.ft</span>
+                 </div>
+                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex flex-col">
+                    <span className="text-[9px] font-black text-gray-400 uppercase mb-1">Category</span>
+                    <span className="text-sm font-bold text-gray-800 capitalize">{property.category}</span>
+                 </div>
               </div>
 
-              {/* Description Section */}
-              <div className="mb-10">
-                <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                    <div className="h-px w-8 bg-blue-600"></div> Overview
-                </h4>
-                <p className="text-gray-500 leading-relaxed font-medium text-base italic">
-                  "{property.description || "Experience unparalleled living in this meticulously designed space, offering modern aesthetics and prime accessibility in a sought-after neighborhood."}"
-                </p>
+              <div className="mb-8 flex-1">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 italic">Description</p>
+                <p className="text-gray-600 leading-relaxed font-semibold italic text-base">"{property.description || "Premium property listing with modern infrastructure and prime location accessibility."}"</p>
               </div>
 
               {/* Professional Role-Based Contact Card */}
-              <div className="bg-gray-950 rounded-[36px] p-7 text-white shadow-2xl relative overflow-hidden group/card mt-auto border border-white/10">
-                 {/* Decorative background circle */}
-                 <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-600/20 rounded-full blur-2xl group-hover/card:bg-blue-600/40 transition-all duration-700"></div>
-                 
+              <div className="bg-gray-900 rounded-[32px] p-6 text-white shadow-2xl relative overflow-hidden border-2 border-white/10 mt-auto">
                  <div className="relative z-10 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-5">
-                       <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center shadow-[0_8px_20px_-4px_rgba(59,130,246,0.5)] text-white">
-                          {isOwnerOrAdmin ? <UserCheck size={28}/> : <ShieldCheck size={28}/>}
+                    <div className="flex items-center gap-4">
+                       <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg text-white">
+                          {isOwnerOrAdmin ? <UserCheck size={24}/> : <ShieldCheck size={24}/>}
                        </div>
                        <div>
-                          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-400 mb-1">
-                            {isOwnerOrAdmin ? "Verified Listing Owner" : "Authorized Real Estate Agent"}
+                          <p className="text-[8px] font-black uppercase tracking-widest text-blue-400 mb-0.5">
+                            {isOwnerOrAdmin ? "Direct Seller Info" : "Official Consultant"}
                           </p>
-                          <h4 className="text-xl font-black tracking-tight">{displayName}</h4>
-                          <p className="text-white/40 text-xs font-bold mt-0.5 tracking-widest">+91 {displayContact}</p>
+                          <h4 className="text-lg font-black italic">{displayName}</h4>
+                          <p className="text-white/50 text-[10px] font-bold">+91 {displayContact}</p>
                        </div>
                     </div>
-                    <button 
-                      onClick={handleWhatsApp} 
-                      className="bg-white text-gray-950 p-4 rounded-2xl hover:bg-[#25D366] hover:text-white transition-all duration-300 shadow-xl active:scale-95"
-                    >
-                       <MessageCircle size={24} fill="currentColor" className="text-inherit"/>
+                    <button onClick={handleWhatsApp} className="bg-white text-gray-900 p-4 rounded-2xl hover:bg-[#25D366] hover:text-white transition-all shadow-xl">
+                       <MessageCircle size={20}/>
                     </button>
                  </div>
               </div>
 
-              <p className="text-center text-[8px] font-black text-gray-300 uppercase tracking-[0.4em] mt-8 opacity-50 underline decoration-blue-500/30 underline-offset-4">Secured Property Listing System</p>
+              <p className="text-center text-[9px] font-black text-gray-300 uppercase tracking-[0.3em] mt-6">Reference ID: {property._id}</p>
             </div>
           </div>
         </div>
