@@ -11,13 +11,6 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
   const ADMIN_CONTACT = "8690385064";
   const currentUserId = localStorage.getItem('userId');
 
-  // Background Scroll Lock (Bina logic change kiye sirf UI experience ke liye)
-  useEffect(() => {
-    if (showMore) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'unset';
-    return () => { document.body.style.overflow = 'unset'; };
-  }, [showMore]);
-
   const getFullImageUrl = () => {
     if (!property.images || property.images.length === 0) return "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800";
     const baseURL = "https://realstate-41cq.onrender.com";
@@ -36,7 +29,7 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
 
   return (
     <>
-      <div className="bg-white rounded-[24px] shadow-md border border-gray-100 overflow-hidden relative font-sans mb-4 transition-transform active:scale-95">
+      <div className="bg-white rounded-[24px] shadow-md border border-gray-100 overflow-hidden relative font-sans mb-4">
         {/* Card Image */}
         <div className="relative aspect-[4/3] bg-gray-100">
           <img 
@@ -75,69 +68,55 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
         </div>
       </div>
 
-      {/* --- RESPONSIVE FULL-SCREEN POPUP --- */}
+      {/* --- LIGHTWEIGHT FULL-SCREEN POPUP --- */}
       {showMore && (
-        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-0 sm:p-4">
-          
-          {/* Backdrop (Back shadow) - PC aur Mobile dono ko handle karega */}
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          {/* Dark Overlay */}
           <div 
-            className="fixed inset-0 bg-black/95 backdrop-blur-sm transition-opacity" 
+            className="absolute inset-0 bg-black/90" 
             onClick={() => setShowMore(false)} 
           />
           
-          {/* Modal Container: PC par max-width aur Mobile par full screen */}
-          <div className="relative bg-white w-full h-full sm:h-auto sm:max-w-[450px] sm:max-h-[85vh] sm:rounded-[32px] overflow-hidden shadow-2xl flex flex-col animate-in zoom-in duration-300 border border-white/10">
+          {/* Modal Container */}
+          <div className="relative bg-white rounded-[30px] w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in duration-200 flex flex-col max-h-[90vh]">
             
-            {/* Close Button - Responsive Position */}
+            {/* Close Button */}
             <button 
               onClick={() => setShowMore(false)} 
-              className="absolute top-5 right-5 z-[100000] p-2 bg-black/30 hover:bg-black/60 text-white rounded-full transition-all"
+              className="absolute top-4 right-4 z-[10000] p-2 bg-black/20 text-white rounded-full"
             >
               <X size={24} />
             </button>
 
-            {/* Content Area - Scrollable */}
-            <div className="overflow-y-auto overflow-x-hidden flex-1">
-              <img src={getFullImageUrl()} className="w-full h-64 sm:h-72 object-cover" alt="Detail" />
-              
+            {/* Content (Scrollable for mobile) */}
+            <div className="overflow-y-auto">
+              <img src={getFullImageUrl()} className="w-full h-64 object-cover" alt="Detail" />
               <div className="p-6">
-                <span className="bg-blue-100 text-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase mb-2 inline-block tracking-widest italic">
-                  {property.category}
-                </span>
-                <h2 className="text-2xl font-black text-gray-900 leading-tight mb-1 capitalize">{property.title}</h2>
-                <p className="text-2xl font-black text-blue-600 mb-6 italic">₹{Number(property.price).toLocaleString('en-IN')}</p>
+                <h2 className="text-2xl font-black text-gray-900">{property.title}</h2>
+                <p className="text-xl font-black text-blue-600 mb-4">₹{Number(property.price).toLocaleString('en-IN')}</p>
                 
-                <div className="grid grid-cols-2 gap-3 mb-8">
-                  <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Area</p>
-                    <p className="font-extrabold text-gray-800 text-sm">{property.area} sqft</p>
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="bg-gray-50 p-3 rounded-xl">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase">Area</p>
+                    <p className="font-bold text-sm">{property.area} sqft</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Location</p>
-                    <p className="font-extrabold text-gray-800 text-sm truncate">{property.location}</p>
+                  <div className="bg-gray-50 p-3 rounded-xl">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase">Location</p>
+                    <p className="font-bold text-sm truncate">{property.location}</p>
                   </div>
                 </div>
 
-                <div className="mb-24 sm:mb-6">
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2 italic">Description</p>
-                  <p className="text-gray-600 leading-relaxed font-semibold italic text-base">
-                    "{property.description || "Premium property listing with modern infrastructure and prime location accessibility."}"
-                  </p>
-                </div>
+                <p className="text-gray-600 italic font-medium mb-6">
+                  {property.description || "No description provided."}
+                </p>
 
-                {/* Bottom Contact Section (Sticky on Mobile, Static on PC) */}
-                <div className="bg-gray-900 p-5 rounded-[24px] text-white flex justify-between items-center shadow-xl mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-black italic">
-                      {displayName.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Contact</p>
-                      <p className="font-bold text-sm truncate max-w-[120px]">{displayName}</p>
-                    </div>
+                <div className="bg-gray-900 p-4 rounded-2xl text-white flex justify-between items-center">
+                  <div>
+                    <p className="text-[10px] text-blue-400 font-bold">CONTACT</p>
+                    <p className="font-bold">{displayName}</p>
                   </div>
-                  <button onClick={handleWhatsApp} className="bg-[#25D366] p-3 rounded-2xl hover:scale-105 active:scale-95 transition-all">
-                    <MessageCircle size={22} fill="white" strokeWidth={0}/>
+                  <button onClick={handleWhatsApp} className="bg-[#25D366] p-3 rounded-xl">
+                    <MessageCircle size={20}/>
                   </button>
                 </div>
               </div>
