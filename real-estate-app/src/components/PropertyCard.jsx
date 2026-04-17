@@ -3,7 +3,7 @@ import {
   MapPin, MessageCircle, X, Eye, 
 } from 'lucide-react';
 
-const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, isAdmin }) => {
+const PropertyCard = ({ property, isAdmin }) => {
   const [showMore, setShowMore] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
@@ -38,8 +38,8 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
 
   return (
     <>
+      {/* Main Property Card Item */}
       <div className="bg-white rounded-[24px] shadow-md border border-gray-100 overflow-hidden relative font-sans mb-4 hover:shadow-lg transition-shadow duration-300">
-        {/* Card Image */}
         <div className="relative aspect-[4/3] bg-gray-200">
           <img 
             src={getFullImageUrl()} 
@@ -47,12 +47,11 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
             onLoad={() => setImgLoaded(true)}
             className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
           />
-          <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-lg uppercase font-bold tracking-wider">
+          <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-lg uppercase font-bold">
             {property.category}
           </div>
         </div>
 
-        {/* Card Info */}
         <div className="p-4">
           <h3 className="text-xl font-black text-gray-900">₹{Number(property.price).toLocaleString('en-IN')}</h3>
           <p className="text-gray-700 font-bold truncate text-sm mt-1">{property.title}</p>
@@ -64,93 +63,82 @@ const PropertyCard = ({ property, onDelete, onSoldOut, onEdit, isProfileView, is
           <div className="flex gap-2">
             <button 
               onClick={() => setShowMore(true)} 
-              className="flex-1 bg-black hover:bg-gray-800 text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-colors"
+              className="flex-1 bg-black text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2"
             >
               <Eye size={16} /> DETAILS
             </button>
-            <button 
-              onClick={handleWhatsApp} 
-              className="bg-[#25D366] hover:bg-[#20bd5a] text-white px-5 py-3 rounded-xl transition-colors"
-            >
+            <button onClick={handleWhatsApp} className="bg-[#25D366] text-white px-5 py-3 rounded-xl">
               <MessageCircle size={20} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* --- IMPROVED FULL-SCREEN MODAL --- */}
+      {/* --- CENTERED MODAL POPUP --- */}
       {showMore && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
-          {/* Blur Overlay */}
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6">
+          {/* Overlay: Pure center hone ke liye inset-0 zaroori hai */}
           <div 
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm" 
+            className="fixed inset-0 bg-black/85 backdrop-blur-sm transition-opacity" 
             onClick={() => setShowMore(false)} 
           />
           
-          {/* Modal Container */}
-          <div className="relative bg-white w-full sm:max-w-lg h-full sm:h-auto sm:max-h-[90vh] sm:rounded-[32px] overflow-hidden shadow-2xl flex flex-col animate-in zoom-in-95 duration-300">
+          {/* Modal Box */}
+          <div className="relative bg-white w-full max-w-[500px] max-h-[85vh] sm:max-h-[90vh] rounded-[32px] overflow-hidden shadow-2xl flex flex-col animate-in zoom-in-95 duration-200">
             
-            {/* Close Button (Floating) */}
+            {/* Close Icon */}
             <button 
               onClick={() => setShowMore(false)} 
-              className="absolute top-4 right-4 z-[10001] p-2 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md transition-all"
+              className="absolute top-4 right-4 z-[100000] p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors"
             >
               <X size={24} />
             </button>
 
-            {/* Scrollable Content Area */}
-            <div className="overflow-y-auto flex-1 custom-scrollbar">
-              {/* Modal Image */}
-              <div className="relative h-[300px] sm:h-[350px]">
-                <img src={getFullImageUrl()} className="w-full h-full object-cover" alt="Property Detail" />
-                <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent"></div>
-              </div>
+            {/* Scrollable Body */}
+            <div className="overflow-y-auto flex-1 scrollbar-hide">
+              <img src={getFullImageUrl()} className="w-full h-64 object-cover" alt="Property Detail" />
               
-              <div className="p-6 sm:p-8 -mt-6 relative bg-white rounded-t-[30px]">
-                <div className="flex justify-between items-start mb-2">
-                   <span className="bg-blue-100 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-                    {property.category}
-                  </span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-black text-gray-900 leading-tight mb-1">{property.title}</h2>
-                <p className="text-2xl font-black text-blue-600 mb-6 tracking-tight">₹{Number(property.price).toLocaleString('en-IN')}</p>
+              <div className="p-6">
+                <span className="bg-blue-100 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase mb-2 inline-block">
+                  {property.category}
+                </span>
+                <h2 className="text-2xl font-black text-gray-900 leading-tight">{property.title}</h2>
+                <p className="text-2xl font-black text-blue-600 my-2">₹{Number(property.price).toLocaleString('en-IN')}</p>
                 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                  <div className="bg-gray-50 border border-gray-100 p-4 rounded-2xl">
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Area</p>
-                    <p className="font-extrabold text-base text-gray-800">{property.area} sqft</p>
+                <div className="grid grid-cols-2 gap-3 my-4">
+                  <div className="bg-gray-50 p-3 rounded-2xl border border-gray-100">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase">Area</p>
+                    <p className="font-extrabold text-gray-800">{property.area} sqft</p>
                   </div>
-                  <div className="bg-gray-50 border border-gray-100 p-4 rounded-2xl">
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Location</p>
-                    <p className="font-extrabold text-base text-gray-800 truncate">{property.location}</p>
+                  <div className="bg-gray-50 p-3 rounded-2xl border border-gray-100">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase">Location</p>
+                    <p className="font-extrabold text-gray-800 truncate">{property.location}</p>
                   </div>
                 </div>
 
-                {/* Description */}
-                <div className="mb-8">
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Description</p>
+                <div className="mb-6">
+                  <p className="text-[10px] text-gray-400 font-bold uppercase mb-1">About this property</p>
                   <p className="text-gray-600 leading-relaxed font-medium">
                     {property.description || "No description provided for this property."}
                   </p>
                 </div>
 
-                {/* Sticky-like Bottom Contact Bar inside Modal */}
-                <div className="bg-gray-900 p-5 rounded-[24px] text-white flex justify-between items-center shadow-xl shadow-gray-200">
+                {/* Bottom Contact Section */}
+                <div className="bg-gray-900 p-5 rounded-[24px] text-white flex justify-between items-center sticky bottom-0 mt-4 shadow-xl">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-black text-white">
+                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-black">
                       {displayName.charAt(0)}
                     </div>
                     <div>
-                      <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Contact Seller</p>
+                      <p className="text-[10px] text-blue-400 font-bold uppercase">Contact</p>
                       <p className="font-bold text-sm">{displayName}</p>
                     </div>
                   </div>
                   <button 
                     onClick={handleWhatsApp} 
-                    className="bg-[#25D366] hover:bg-[#20bd5a] p-3.5 rounded-2xl transition-transform active:scale-95"
+                    className="bg-[#25D366] p-3.5 rounded-2xl hover:scale-105 active:scale-95 transition-all"
                   >
-                    <MessageCircle size={24} fill="white"/>
+                    <MessageCircle size={22} fill="white"/>
                   </button>
                 </div>
               </div>
